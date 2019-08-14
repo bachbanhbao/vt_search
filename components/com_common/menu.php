@@ -1,16 +1,17 @@
 <?php
-// $data = getCategoryFilter();
 if (!isset($_SESSION['CAT'])) {
-	$_SESSION['CAT'] = "[{\"name\": \"Category 1\", \"value\": \"1\"},{\"name\": \"Category 2\", \"value\": \"2\"}]";
-	$_SESSION['CAT'] = json_decode($_SESSION['CAT']);
+	$_SESSION['CAT'] = getCategoryFilter(ROOTHOST_API_SEARCH);
+	$_SESSION['CAT'] = json_decode($_SESSION['CAT']);	
 }
 ?>
 <ul>
 	<?php
-	for ($i=0; $i < count($_SESSION['CAT']); $i++) { ?>
-		<li class="<?php if((isset($_GET['cat']) && $_GET['cat'] == $_SESSION['CAT'][$i]->value) || (!isset($_GET['cat']) && $i==0)) echo 'active';?>">	
-			<a href="<?php echo ROOTHOST?>category-<?php echo $_SESSION['CAT'][$i]->value?>" aria-expanded="false" >
-				<i class="fa fa-lg fa-fw fa-crosshairs"></i>
+	for ($i=0; $i < count($_SESSION['CAT']); $i++) { 
+		$index = $i;
+		?>
+		<li class="<?php if((isset($_GET['cat']) && $_GET['cat'] == $index) || (!isset($_GET['cat']) && $i==0)) echo 'active';?>">	
+			<a href="<?php echo ROOTHOST?>category-<?php echo $index;?>" aria-expanded="false" >
+				<i class="fa fa-lg fa-fw fa-folder-o"></i>
 				<span class="menu-item-parent"><?php echo $_SESSION['CAT'][$i]->name?></span>
 			</a>
 		</li>
@@ -31,8 +32,10 @@ if (!isset($_SESSION['CAT'])) {
 		background: #00918d;
 		/*background: linear-gradient( 145deg, #4772d9, #5be0e0 );*/
 	}
+
 	nav ul li a {
 		padding: 15px 5px 10px 10px;
+		text-transform: uppercase;
 	}
 	nav ul ul li>a {
 		padding-top: 10px !important;
@@ -59,15 +62,15 @@ if (!isset($_SESSION['CAT'])) {
 		border-bottom: none;
 	}
 	nav ul li.active {
-	    background: #fff;
+	    background: #FF9900;
 	}
 	nav ul li.active a {
-		color: #333 !important;
+		color: #fff !important;
 	}
 	.minified nav>ul>li {
 		border-bottom: 1px solid #ccc;
 	}
 	nav>ul>li>a b {
-		top: 15px;
+		top: 13px;
 	}
 </style>

@@ -99,7 +99,7 @@ include_once("includes/vt-includes-js.php");
 		text-align: center;
 		position: absolute;
 	    left: 45%;
-	    top: 50%;
+	    top: 15%;
 	    display: none;
 	}
 </style>

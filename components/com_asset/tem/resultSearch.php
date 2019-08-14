@@ -1,7 +1,21 @@
 
 <?php
 include_once("includes/vt-includes-js.php");
+$blackList = ['base_url'];
+if (isset($_GET['searchbytype']) && !isset($_POST['submit_form_fillter'])) {
+	$urlType = str_replace("@", '/', $_GET['searchbytype']);
+	$urlType = 'https://www.digikey.com/products/en/'.$urlType;
+	// @params host, urltype, offset, limit
+	$respSearch = getItemsByType(ROOTHOST_API_SEARCH , $urlType, 0, 50);
+	$respSearch = json_decode($respSearch);
+	if ($respSearch) {
+		$dataHead = $respSearch[0];	
+	} else {
+		$dataHead = array();
+	}
+}
 ?>
+
 <section class="" id="widget-grid">
 	<div class="row">
 		<article class="col-sm-12 col-md-12 col-lg-12">
@@ -14,74 +28,71 @@ include_once("includes/vt-includes-js.php");
 				<div role="content">
 					<!-- widget content -->
 					<div class="widget-body no-padding">
+						<!-- Include form search item -->
 						<?php include('search.php');?>
+						<!-- The end include form search item -->
+
+						<!-- Generate data to table -->
 						<table id="dt_basic" class="table table-striped table-bordered table-hover" width="100%">
 							<thead>			                
 								<tr>
 									<th width="2%">No.</th>
-									<th width="10%">
-										Hình ảnh
-									</th>
-									<th width="10%">
-										Mã linh kiện
-									</th>
-									<th width="10%">
-										Mã nhà SX
-									</th>
-									<th width="10%">
-										Nhà sản xuất
-									</th>
-									<th width="10%">
-										Mô tả
-									</th>
-									<th width="6%">
-										Giá
-									</th>
-									<th width="6%">
-										Series
-									</th>
-									<th width="6%">
-										Part Status
-									</th>
-									<th width="6%">
-										Loại
-									</th>
-									<th width="6%">
-										Function
-									</th>
-									<th width="6%">
-										Embedded
-									</th>
+									<?php
+									if ($respSearch != null) {
+										foreach ($dataHead as $key => $value) {
+											echo "<th>".$key."</th>";
+										}
+									}	
+									?>
 								</tr>
 							</thead>
 							<tbody>
 								<?php
 								$stt=1;
-								for ($i=0; $i < 100; $i++) { ?>
-									<tr>
-										<td align="center"><?php echo $stt;?></td>
-										<td align="center">
-											<img src="assets/images/img.jpg" width="32" height="32">
+								if ($respSearch != null) {
+									foreach ($respSearch as $key => $value) { ?>
+										<tr><td><?php echo $stt;?></td>
+										<?php foreach ($value as $k => $val) { ?>
+										<td style="<?php if ($k == 'Datasheets') echo 'text-align: center'?>">
+											<?php 
+												if (!is_object($val) && !in_array($k, $blackList)) echo $val;
+												else {
+													if (isset($val->name)) {
+														echo str_replace('"', '', $val->name);
+													} else if (isset($val->phone)) {
+														echo 'Phone: '.$val->phone;
+														if (isset($val->desktop)) {
+															echo '<br/>Desktop: '.$val->desktop;
+														}
+
+													} else if (isset($val->desktop))  {
+														echo $val->desktop;
+
+													} else {
+														if ($k == 'Image') {
+															// var_dump($val);
+															$dataImg = "data:image/png;base64,".$val->based64;
+															echo "<img src=".$dataImg." title=".$val->title." />";
+														} else if ($k == 'Datasheets') {
+															echo "<a onclick=\"\"><img class=\"datasheet-img\" src=\"images/pdf.png\" alt=\"Datasheets\" title=\"Datasheets\"></a>";
+														} else {
+															echo "None";
+														}
+													}
+												}
+											?>
 										</td>
-										<td align="center">UDP-<?php echo $stt;?></td>
-										<td align="center">NSX-<?php echo $stt;?></td>
-										<td align="center">Ericson</td>
-										<td align="center">Mô tả</td>
-										<td align="center">$100</td>
-										<td align="center">Series</td>
-										<td align="center"><?php echo $stt;?></td>
-										<td align="center"><?php echo $stt;?></td>
-										<td align="center"><?php echo $stt;?></td>
-										<td align="center"><?php echo $stt;?></td>
-										
-									</tr>
-								<?php $stt++;}
-								?>
+										<?php } $stt++; ?>
+										</tr>
+								<?php }}?>
 							</tbody>
 						</table>
+						<!-- The end -->
 					</div>
 					<!-- end widget content -->
-					
+					<div class="img_loading">
+						<img src="<?php echo ROOTHOST?>images/loading.gif" width="100" height="auto">	
+					</div>
 				</div>
 				<!-- end widget div -->
 				
@@ -95,7 +106,46 @@ include_once("includes/vt-includes-js.php");
 </section>
 
 <!-- SCRIPTS ON PAGE EVENT -->
-<script type="text/javascript">	
+<script type="text/javascript">
+	
+	$('#condition-function').select2('val', ["GPS receiver with backup battery", "Four serial ports", "Ethernet"]);
+
+	$(document).ready(function() {
+		$(".img_loading").css({'display':'block'});
+		$(window).on('load', function(){
+			$(".img_loading").css({'display':'none'});
+		})
+
+		$("#btn-search").click(function(){
+			$(".img_loading").css({'display':'block'});		
+		})
+
+		$(".cbo_search_item").change(function(){
+			var gr_condition = $(this).attr('gr_condition');
+			$("#clear-"+gr_condition).css({'display':'block'});
+		})
+	})
+
+	function clearConditionSearch() {
+		var pageURL = $(location).attr("href");
+		$.post("<?php echo ROOTHOST;?>ajaxs/clearConditionSearch.php",{clear_all: true},function($rep){
+            smartInfoMsg('Thông báo', 'Xóa tất cả điều kiện thành công!', 3000);
+            setTimeout(function(){
+            	window.location = pageURL;
+            }, 1500);
+        })
+	}
+
+	function clearItemSelected(groupCondition) {
+		$("#condition-"+groupCondition).val([]);
+		$("#clear-"+groupCondition).css({'display':'none'});
+		smartInfoMsg('Thông báo', 'Xóa thành công!', 3000);
+	}
+
+	function submitForm() {
+		$("#form-search").submit();
+	}
+
 	pageSetUp();
 	var pagefunction = function() {
 		var responsiveHelper_dt_basic = undefined;
@@ -113,7 +163,7 @@ include_once("includes/vt-includes-js.php");
 					"t"+
 					"<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-6'p>>",
 				"autoWidth" : true,
-				"lengthMenu":[20,40,60,80,100],
+				"lengthMenu":[10,20,30,40,50],
 				"preDrawCallback" : function() {
 					// Initialize the responsive datatables helper once.
 					if (!responsiveHelper_dt_basic) {
@@ -155,5 +205,43 @@ include_once("includes/vt-includes-js.php");
 	}
 	.smart-form .select-multiple select {
 		height: 200px;
+	}
+	#dt_basic_wrapper {
+		overflow-x: scroll;
+	}
+	.img_loading {
+		text-align: center;
+		position: absolute;
+	    left: 45%;
+	    top: 30%;
+	    display: none;
+	}
+	.morecontent span {
+	    display: none;
+	}
+	.morelink {
+	    display: block;
+	}
+	.mrc-controls {
+		padding: 0 15px;
+	}
+	.clear-all-item-selected {
+		padding: 10px 0 3px;
+		display: none;
+		cursor: pointer;
+	}
+	.mrc-content-wrap {
+		padding: 0 15px;
+	}
+	.lst-condition-selected {
+		list-style: none;
+		margin: 0;
+		padding: 12px;
+	}
+	.lst-condition-selected li {
+		float: left;
+		padding: 3px 6px;
+		border: 1px solid #00918d;
+		margin: 3px;
 	}
 </style>

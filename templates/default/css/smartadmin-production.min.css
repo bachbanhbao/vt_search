@@ -11663,7 +11663,7 @@ aside {
 	left: 0;
 	z-index: 904;
 	/*padding-top: 49px*/
-	border-top: 1px solid #fff;
+	/* border-top: 1px solid #fff; */
     z-index: 9999;
     margin-top: 49px;
 }
@@ -11671,7 +11671,7 @@ aside {
 #main {
 	margin-left: 260px;
 	padding: 0;
-	padding-bottom: 52px;
+	/*padding-bottom: 52px;*/
 	min-height: 500px;
 	position: relative
 }

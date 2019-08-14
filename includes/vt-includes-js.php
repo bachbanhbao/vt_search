@@ -58,4 +58,7 @@
 
 <script src="<?php echo THIS_TEM_PATH; ?>js/gfscript.js"></script>
 
+<script src="<?php echo THIS_TEM_PATH; ?>js/jquery.morecontent.js"></script>	
+<script src="<?php echo THIS_TEM_PATH; ?>js/readmore.js"></script>
+
 

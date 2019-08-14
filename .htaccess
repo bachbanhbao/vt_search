@@ -3,9 +3,9 @@ RewriteRule ^home/?$ 		index.php
 
 RewriteRule ^dashboard/?$ 	index.php?com=asset&viewtype=dashboard
 
-RewriteRule ^category-([0-9]+)?$ 	index.php?com=asset&viewtype=dashboard&cat=$1
+RewriteRule ^category-(.*)?$ 	index.php?com=asset&viewtype=dashboard&cat=$1
 
-RewriteRule ^cat-(.*)-product-(.*)?$ 	index.php?com=asset&viewtype=resultSearch&&cat=$1&product=$2
+RewriteRule ^cat-([0-9]+)-search-by-type-(.*)?$ 	index.php?com=asset&viewtype=resultSearch&cat=$1&searchbytype=$2
 
 <Ifmodule mod_php5.c>
 	php_flag display_errors  on
