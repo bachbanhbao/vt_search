@@ -23,7 +23,8 @@ $tmp->wapperTemplate();
 
 // $condition = '{"type":"https://www.digikey.com/products/en/cable-assemblies/coaxial-cables-rf/456","offset":"0","limit":"30","conditions":"{"Impedance":["50 Ohms"]}';
 // $condition = '{"type":"https://www.digikey.com/products/en/cable-assemblies/coaxial-cables-rf/456", "offset":"0","limit":"10","conditions":{"Impedance":["50 Ohms"]}}';
-// $rs = searchItemByConditionOfType(ROOTHOST_API_SEARCH , $condition);
+
+// $rs = getTotalPoint();
 // $rs = json_decode($rs);
 // var_dump($rs);
 

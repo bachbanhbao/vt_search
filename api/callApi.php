@@ -36,7 +36,7 @@ function getTypeByProduct($rootHostApi, $urlPro) {
 // @return all item of type
 // @params $hostApi, urlType, $offset, $limit
 function getItemsByType($rootHostApi, $urlType, $offset, $limit) {
-    $url = $rootHostApi.'getItems?type='.$urlType.'&offset=0&limit=30';
+    $url = $rootHostApi.'getItems?type='.$urlType.'&offset=0&limit=100000';
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     $result = curl_exec($curl);
@@ -47,7 +47,6 @@ function getItemsByType($rootHostApi, $urlType, $offset, $limit) {
 // @return all item of type
 // @params $hostApi, urlType
 function getConditionByType($rootHostApi, $urlType) {
-    // $url = $rootHostApi.'getConditionsByTypes?type=Interface%20Boards';
     $url = $rootHostApi.'getConditionsByTypes?type='.$urlType;
     // echo $url;
     $curl = curl_init($url);
@@ -59,8 +58,7 @@ function getConditionByType($rootHostApi, $urlType) {
 
 // Sear item by condition type
 function searchItemByConditionOfType($rootHostApi, $condition) {
-    // $condition = '{"type":"https:\/\/www.digikey.com\/products\/en\/cable-assemblies\/barrel-power-cables\/464","offset":"0","limit":"30","conditions":"{\"Style\":[\"Jack to Plug\",\"Jack to Wire Leads\",\"Jack to Plug, Right Angle\"]}"}';
-    $condition = '{"type":"https:\/\/www.digikey.com\/products\/en\/cable-assemblies\/barrel-audio-cables\/464","offset":"0","limit":"30","conditions":"{\"Shielding\":[\"Shielded\"]}"}';
+    $condition = '{"type": "https://www.digikey.com/products/en/cable-assemblies/coaxial-cables-rf/456", "offset": "0", "limit": "10", "conditions": {"Impedance": ["50 Ohms"]}}';
     // echo $condition;
     $url = $rootHostApi.'getItemsByConditions';
     $curl = curl_init($url);
@@ -76,6 +74,20 @@ function searchItemByConditionOfType($rootHostApi, $condition) {
     return $result;
 }   
 
-
+function getTotalPoint() {
+    $condition = '{"user_id":"2"}';
+    $url = 'http://localhost/relaxgame/api/getTotalPoint.php';
+    $curl = curl_init($url);
+    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");                                                                     
+    curl_setopt($curl, CURLOPT_POSTFIELDS, $condition);                                                                  
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);                                                                      
+    curl_setopt($curl, CURLOPT_HTTPHEADER, array(                                                                          
+        'Content-Type: application/json',                                                                                
+        'Content-Length: ' . strlen($condition))                                                                       
+    );                                                                                                                   
+    $result = curl_exec($curl);
+    curl_close($curl);
+    return $result;
+}   
 
 ?>

@@ -29,7 +29,7 @@ if (isset($_GET['searchbytype']) && !isset($_POST['submit_form_fillter'])) {
 					<!-- widget content -->
 					<div class="widget-body no-padding">
 						<!-- Include form search item -->
-						<?php include('search.php');?>
+						<?php //include('search.php');?>
 						<!-- The end include form search item -->
 
 						<!-- Generate data to table -->
