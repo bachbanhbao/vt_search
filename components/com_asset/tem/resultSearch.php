@@ -1,19 +1,41 @@
 
 <?php
 include_once("includes/vt-includes-js.php");
+$cur_page = 1;
+$total_rows = 0;
+if (!isset($_SESSION["CUR_PAGE_ACCOUNT"])) {
+	$_SESSION["CUR_PAGE_ACCOUNT"]=1;
+}
+// get item by type
 $blackList = ['base_url'];
 if (isset($_GET['searchbytype']) && !isset($_POST['submit_form_fillter'])) {
 	$urlType = str_replace("@", '/', $_GET['searchbytype']);
 	$urlType = 'https://www.digikey.com/products/en/'.$urlType;
+
+	$total_rows = getTotalItems(ROOTHOST_API_SEARCH, $urlType);
+	// echo $total_rows;
+	// Pagging
+	if(isset($_POST["txtCurnpage"]))
+	    $_SESSION["CUR_PAGE_ACCOUNT"]=$_POST["txtCurnpage"];
+
+	if($_SESSION['CUR_PAGE_ACCOUNT'] > ceil($total_rows/MAX_ROWS)) {
+	    $_SESSION['CUR_PAGE_ACCOUNT'] = ceil($total_rows/MAX_ROWS);
+	}
+	
+	$cur_page=$_SESSION['CUR_PAGE_ACCOUNT'];
+	// echo $cur_page;
 	// @params host, urltype, offset, limit
-	$respSearch = getItemsByType(ROOTHOST_API_SEARCH , $urlType, 0, 50);
+	$offset = $cur_page > 0 ? ($cur_page - 1) * MAX_ROWS : 1;
+	$respSearch = getItemsByType(ROOTHOST_API_SEARCH , $urlType, $offset, MAX_ROWS);
 	$respSearch = json_decode($respSearch);
+
 	if ($respSearch) {
 		$dataHead = $respSearch[0];	
 	} else {
 		$dataHead = array();
 	}
 }
+
 ?>
 
 <section class="" id="widget-grid">
@@ -29,7 +51,7 @@ if (isset($_GET['searchbytype']) && !isset($_POST['submit_form_fillter'])) {
 					<!-- widget content -->
 					<div class="widget-body no-padding">
 						<!-- Include form search item -->
-						<?php //include('search.php');?>
+						<?php include('search.php');?>
 						<!-- The end include form search item -->
 
 						<!-- Generate data to table -->
@@ -48,46 +70,51 @@ if (isset($_GET['searchbytype']) && !isset($_POST['submit_form_fillter'])) {
 							</thead>
 							<tbody>
 								<?php
-								$stt=1;
+								$stt= ($cur_page-1) * MAX_ROWS + 1;
 								if ($respSearch != null) {
 									foreach ($respSearch as $key => $value) { ?>
-										<tr><td><?php echo $stt;?></td>
-										<?php foreach ($value as $k => $val) { ?>
-										<td style="<?php if ($k == 'Datasheets') echo 'text-align: center'?>">
-											<?php 
-												if (!is_object($val) && !in_array($k, $blackList)) echo $val;
-												else {
-													if (isset($val->name)) {
-														echo str_replace('"', '', $val->name);
-													} else if (isset($val->phone)) {
-														echo 'Phone: '.$val->phone;
-														if (isset($val->desktop)) {
-															echo '<br/>Desktop: '.$val->desktop;
-														}
+										<tr>
+											<td><?php echo $stt;?></td>
+											<?php foreach ($value as $k => $val) { ?>
+											<td style="<?php if ($k == 'Datasheets') echo 'text-align: center'?>">
+												<?php 
+													if (!is_object($val) && !in_array($k, $blackList)) echo $val;
+													else {
+														if (isset($val->name)) {
+															echo str_replace('"', '', $val->name);
+														} else if (isset($val->phone)) {
+															echo 'Phone: '.$val->phone;
+															if (isset($val->desktop)) {
+																echo '<br/>Desktop: '.$val->desktop;
+															}
 
-													} else if (isset($val->desktop))  {
-														echo $val->desktop;
+														} else if (isset($val->desktop))  {
+															echo $val->desktop;
 
-													} else {
-														if ($k == 'Image') {
-															// var_dump($val);
-															$dataImg = "data:image/png;base64,".$val->based64;
-															echo "<img src=".$dataImg." title=".$val->title." />";
-														} else if ($k == 'Datasheets') {
-															echo "<a onclick=\"\"><img class=\"datasheet-img\" src=\"images/pdf.png\" alt=\"Datasheets\" title=\"Datasheets\"></a>";
 														} else {
-															echo "None";
+															if ($k == 'Image') {
+																$dataImg = "data:image/png;base64,".$val->based64;
+																echo "<img src=".$dataImg." title=".$val->title." />";
+															} else if ($k == 'Datasheets') {
+																echo "<a onclick=\"\"><img class=\"datasheet-img\" src=\"images/pdf.png\" alt=\"Datasheets\" title=\"Datasheets\"></a>";
+															} else {
+																echo "None";
+															}
 														}
 													}
-												}
-											?>
-										</td>
+												?>
+											</td>
 										<?php } $stt++; ?>
 										</tr>
 								<?php }}?>
 							</tbody>
 						</table>
 						<!-- The end -->
+						<table width="100%" border="0" cellspacing="0" cellpadding="0" class="Footer_list">
+							<tr>
+								<td align="center"><?php paging($total_rows, MAX_ROWS, $cur_page);?></td>
+							</tr>
+						</table>
 					</div>
 					<!-- end widget content -->
 					<div class="img_loading">
@@ -107,10 +134,8 @@ if (isset($_GET['searchbytype']) && !isset($_POST['submit_form_fillter'])) {
 
 <!-- SCRIPTS ON PAGE EVENT -->
 <script type="text/javascript">
-	
-	$('#condition-function').select2('val', ["GPS receiver with backup battery", "Four serial ports", "Ethernet"]);
-
 	$(document).ready(function() {
+		// $("body").addClass("minified");
 		$(".img_loading").css({'display':'block'});
 		$(window).on('load', function(){
 			$(".img_loading").css({'display':'none'});
@@ -163,7 +188,8 @@ if (isset($_GET['searchbytype']) && !isset($_POST['submit_form_fillter'])) {
 					"t"+
 					"<'dt-toolbar-footer'<'col-sm-6 col-xs-12 hidden-xs'i><'col-xs-12 col-sm-6'p>>",
 				"autoWidth" : true,
-				"lengthMenu":[10,20,30,40,50],
+				"lengthMenu":[25, 50, 100, 150, 250, 500],
+				"paging": false,
 				"preDrawCallback" : function() {
 					// Initialize the responsive datatables helper once.
 					if (!responsiveHelper_dt_basic) {
@@ -242,6 +268,31 @@ if (isset($_GET['searchbytype']) && !isset($_POST['submit_form_fillter'])) {
 		float: left;
 		padding: 3px 6px;
 		border: 1px solid #00918d;
+		margin: 3px;
+	}
+	.count-result-search {
+		clear: both;
+		padding: 15px 15px 0;
+		font-size: 20px;
+	}
+	.txt_search_within {
+		height: 26px;
+		width: 450px;
+	}
+	.btn-search-within {
+		height: 26px;
+		width: 120px;
+		font-weight: bold;
+	}
+	.smart-form footer .btn {
+		/* float: left; */
+	}
+	.paging {
+		padding: 20px 0;
+	}
+	.paging a {
+		padding: 5px 8px;
+		border: 1px solid #ccc;
 		margin: 3px;
 	}
 </style>

@@ -12,8 +12,7 @@ function getCategoryFilter($rootHostApi) {
 
 // @return all product of category
 // @params $hostApi, $urlCat
-function getProductByCategory($rootHostApi, $urlCat) 
-{
+function getProductByCategory($rootHostApi, $urlCat) {
     $url = $rootHostApi.'getProductsByCategory?category='.$urlCat;
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -36,7 +35,17 @@ function getTypeByProduct($rootHostApi, $urlPro) {
 // @return all item of type
 // @params $hostApi, urlType, $offset, $limit
 function getItemsByType($rootHostApi, $urlType, $offset, $limit) {
-    $url = $rootHostApi.'getItems?type='.$urlType.'&offset=0&limit=100000';
+    $url = $rootHostApi.'getItems?type='.$urlType.'&offset='.$offset.'&limit='.$limit;
+    $curl = curl_init($url);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    $result = curl_exec($curl);
+    curl_close($curl);
+    return $result; 
+}
+
+// get all total Item by type
+function getTotalItems($rootHostApi, $urlType) {
+    $url = $rootHostApi.'getTotalItems?type='.$urlType;
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     $result = curl_exec($curl);
@@ -48,7 +57,6 @@ function getItemsByType($rootHostApi, $urlType, $offset, $limit) {
 // @params $hostApi, urlType
 function getConditionByType($rootHostApi, $urlType) {
     $url = $rootHostApi.'getConditionsByTypes?type='.$urlType;
-    // echo $url;
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     $result = curl_exec($curl);
@@ -57,37 +65,39 @@ function getConditionByType($rootHostApi, $urlType) {
 }
 
 // Sear item by condition type
-function searchItemByConditionOfType($rootHostApi, $condition) {
-    $condition = '{"type": "https://www.digikey.com/products/en/cable-assemblies/coaxial-cables-rf/456", "offset": "0", "limit": "10", "conditions": {"Impedance": ["50 Ohms"]}}';
-    // echo $condition;
+function searchItemByConditionOfType($rootHostApi, $jsonCond) {
+    $jsonCond = str_replace(array("\/", '\"', '"{', '"}', '")'), array('/', '"', "{", "}", '\")'), $jsonCond);
+    // echo $jsonCond;
+    // $jsonCond = '{"type":"https://www.digikey.com/products/en/cable-assemblies/barrel-audio-cables/463","conditions":{"1st Connector":["Phone Plug, 3.5mm (1/8\")"]},"offset":0,"limit":25}';
     $url = $rootHostApi.'getItemsByConditions';
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");                                                                     
-    curl_setopt($curl, CURLOPT_POSTFIELDS, $condition);                                                                  
+    curl_setopt($curl, CURLOPT_POSTFIELDS, $jsonCond);                                                                  
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);                                                                      
     curl_setopt($curl, CURLOPT_HTTPHEADER, array(                                                                          
         'Content-Type: application/json',                                                                                
-        'Content-Length: ' . strlen($condition))                                                                       
+        'Content-Length: ' . strlen($jsonCond))                                                                       
     );                                                                                                                   
     $result = curl_exec($curl);
     curl_close($curl);
     return $result;
 }   
 
-function getTotalPoint() {
-    $condition = '{"user_id":"2"}';
-    $url = 'http://localhost/relaxgame/api/getTotalPoint.php';
+function getTotalItemsByConditions($rootHostApi, $jsonCond) {
+    $jsonCond = str_replace(array("\/", '\"', '"{', '"}', '")'), array('/', '"', "{", "}", '\")'), $jsonCond);
+    // echo $jsonCond;
+    $url = $rootHostApi.'getTotalItemsByConditions';
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");                                                                     
-    curl_setopt($curl, CURLOPT_POSTFIELDS, $condition);                                                                  
+    curl_setopt($curl, CURLOPT_POSTFIELDS, $jsonCond);                                                                  
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);                                                                      
     curl_setopt($curl, CURLOPT_HTTPHEADER, array(                                                                          
         'Content-Type: application/json',                                                                                
-        'Content-Length: ' . strlen($condition))                                                                       
+        'Content-Length: ' . strlen($jsonCond))                                                                       
     );                                                                                                                   
     $result = curl_exec($curl);
     curl_close($curl);
     return $result;
-}   
+} 
 
 ?>

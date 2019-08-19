@@ -1,7 +1,7 @@
 <?php
 session_start();
 include('../includes/vt-config.php');
-include('../api/callApi.php');
+include('../api/apiFuncCallBackend.php');
 
 if (isset($_POST['idxType'])) {
     $idxType = $_POST['idxType'];
