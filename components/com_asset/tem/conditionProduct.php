@@ -1,4 +1,5 @@
 <?php
+defined('ISHOME') or die('Can not acess this page, please come back!');
 $jsonProduct = array();
 if (isset($_GET['cat'])) {
     $idxCat = $_GET['cat'];

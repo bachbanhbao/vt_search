@@ -8,7 +8,7 @@ function paging($total_rows,$max_rows,$cur_page){
 	<input type="hidden" name="txtCurnpage" id="txtCurnpage" value="1" />';
 	$paging.="<strong>Total:</strong> $total_rows <strong>on</strong> $max_pages <strong>page</strong><div style=\"clear: both; height: 20px;\"></div>";
 	if($cur_page >1)
-	$paging.='<a href="javascript:gotopage('.($cur_page-1).')"> << </a>';
+	$paging.='<a href="javascript:gotopage('.($cur_page-1).')"> <i class="fa fa-chevron-left"></i> </a>';
 	if($max_pages>1){
 		for($i=$start;$i<=$end;$i++)
 		{
@@ -19,7 +19,7 @@ function paging($total_rows,$max_rows,$cur_page){
 		}
 	}
 	if($cur_page <$max_pages)
-	$paging.='<a href="javascript:gotopage('.($cur_page+1).')"> >> </a>';
+	$paging.='<a href="javascript:gotopage('.($cur_page+1).')"> <i class="fa fa-chevron-right"></i> </a>';
 	$paging.='</div></form>';
 	echo $paging;
 }

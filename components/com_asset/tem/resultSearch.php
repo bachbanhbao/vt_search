@@ -1,8 +1,10 @@
 
 <?php
+defined('ISHOME') or die('Can not acess this page, please come back!');
 include_once("includes/vt-includes-js.php");
 $cur_page = 1;
 $total_rows = 0;
+
 if (!isset($_SESSION["CUR_PAGE_ACCOUNT"])) {
 	$_SESSION["CUR_PAGE_ACCOUNT"]=1;
 }
@@ -294,5 +296,12 @@ if (isset($_GET['searchbytype']) && !isset($_POST['submit_form_fillter'])) {
 		padding: 5px 8px;
 		border: 1px solid #ccc;
 		margin: 3px;
+	}
+	.cur_page {
+		background: #3276b1;
+		color: #fff;
+		border: none !important;
+		font-size: 16px;
+		font-weight: bold;
 	}
 </style>

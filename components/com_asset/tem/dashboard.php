@@ -1,5 +1,5 @@
-
 <?php
+defined('ISHOME') or die('Can not acess this page, please come back!');
 include_once("includes/vt-includes-js.php");
 ?>
 <section class="" id="widget-grid">

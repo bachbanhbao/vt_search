@@ -53,7 +53,7 @@ function getTotalItems($rootHostApi, $urlType) {
     return $result; 
 }
 
-// @return all item of type
+// @return list condition filter
 // @params $hostApi, urlType
 function getConditionByType($rootHostApi, $urlType) {
     $url = $rootHostApi.'getConditionsByTypes?type='.$urlType;
@@ -64,11 +64,30 @@ function getConditionByType($rootHostApi, $urlType) {
     return $result; 
 }
 
+// @return list condition
+// @params $hostApi, urlType
+function getCondByTypesAndCond($rootHostApi, $jsonCond) {
+    $jsonCond = str_replace(array("\/", '\"', '"{', '"}', '")'), array('/', '"', "{", "}", '\")'), $jsonCond);
+    // echo $jsonCond;
+
+    $url = $rootHostApi.'getConditionsByTypesAndConditions';
+    $curl = curl_init($url);
+    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");                                                                     
+    curl_setopt($curl, CURLOPT_POSTFIELDS, $jsonCond);                                                                  
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);                                                                      
+    curl_setopt($curl, CURLOPT_HTTPHEADER, array(                                                                          
+        'Content-Type: application/json',                                                                                
+        'Content-Length: ' . strlen($jsonCond))                                                                       
+    );                                                                                                                   
+    $result = curl_exec($curl);
+    curl_close($curl);
+    return $result; 
+}
+
 // Sear item by condition type
 function searchItemByConditionOfType($rootHostApi, $jsonCond) {
     $jsonCond = str_replace(array("\/", '\"', '"{', '"}', '")'), array('/', '"', "{", "}", '\")'), $jsonCond);
     // echo $jsonCond;
-    // $jsonCond = '{"type":"https://www.digikey.com/products/en/cable-assemblies/barrel-audio-cables/463","conditions":{"1st Connector":["Phone Plug, 3.5mm (1/8\")"]},"offset":0,"limit":25}';
     $url = $rootHostApi.'getItemsByConditions';
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "POST");                                                                     

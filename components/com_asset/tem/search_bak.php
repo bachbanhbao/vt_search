@@ -5,28 +5,20 @@ if (!isset($_SESSION['CACHE_CONDITION']) && !isset($_SESSION['URL_TYPE'])) {
     $_SESSION['CACHE_CONDITION'] = array();
     $_SESSION['URL_TYPE'] = array();
 }
-// innit session if not isset
-if (!isset($_SESSION['COND_SEARCH'])) {
-    $_SESSION['COND_SEARCH'] = array();
-}
-$lstConditionFillter = null;
 
-// If isset GET searchbytype create link url type then check if not exist array session then add array
-// get all condtion fillter by url type have conditon search null
+// Isset GET searchbytype
 if (isset($_GET['searchbytype'])) {
     $urlType = str_replace("@", '/', $_GET['searchbytype']);
-    $urlType = 'https://www.digikey.com/products/en/'.$urlType;    
+    $urlType = 'https://www.digikey.com/products/en/'.$urlType;
+    $lstConditionFillter = null;
     // If urlType not exist SESSION then get condition by new url
     if (!in_array($urlType, $_SESSION['URL_TYPE'])) {
         array_push($_SESSION['URL_TYPE'], $urlType);
-        
+        // @params $RoothostAPI and $urlType
         // @Return list condition by type
-        $jsonFilter = array('type' => $urlType, 'conditions' => $_SESSION['COND_SEARCH']);
-        $resp = getCondByTypesAndCond(ROOTHOST_API_SEARCH , json_encode($jsonFilter));
-         
+        $resp = getConditionByType(ROOTHOST_API_SEARCH , $urlType);
         $resp = json_decode($resp);
         $objData = array($urlType => $resp);
-        
         // push data condition to cache session
         array_push($_SESSION['CACHE_CONDITION'], $objData);
     }
@@ -42,13 +34,15 @@ if (isset($_GET['searchbytype'])) {
     // var_dump($lstConditionFillter);
 }
 
-// =============SEARCH DATA BY CONDITON============
+// innit session if not isset
+if (!isset($_SESSION['COND_SEARCH'])) {
+    $_SESSION['COND_SEARCH'] = array();
+}
 // If event POST condition
 if (isset($_POST['submit_form_fillter'])) {
+
     // Create json condition search item
     $jsonFilter = array("type" => $urlType);
-
-    // Loop
     foreach ($lstConditionFillter as $cboName => $value) {
         // check list value condition is array or array object
         $isObject = false;
@@ -60,10 +54,8 @@ if (isset($_POST['submit_form_fillter'])) {
         }
         // key condition: Sheilding | Part Status.name is object
         $keyCondition = $isObject ? $cboName.'.name' : $cboName;
-
         // un unicode
         $cboName = strtolower(un_unicode($cboName));
-        
         // execute data post
         if (isset($_POST['condition-'.$cboName])) {
             $arryPostData = $_POST['condition-'.$cboName];
@@ -74,29 +66,23 @@ if (isset($_POST['submit_form_fillter'])) {
             }
         }
     } 
-    
     // assign string condition
     $jsonFilter['conditions'] = $_SESSION['COND_SEARCH'];
-
-    // Get again list condition search by filter
-    $respConditionByTypeAndCond = getCondByTypesAndCond(ROOTHOST_API_SEARCH , json_encode(array('type' => $urlType, 'conditions' => $_SESSION['COND_SEARCH'])));
-    $respConditionByTypeAndCond = json_decode($respConditionByTypeAndCond);
-    $lstConditionFillter = $respConditionByTypeAndCond;
 
     // get total item by condition
     $total_rows = getTotalItemsByConditions(ROOTHOST_API_SEARCH, json_encode($jsonFilter));
     // echo $total_rows;
-
-    // Pagging datatable
+    // Pagging
     if(isset($_POST["txtCurnpage"]))
         $_SESSION["CUR_PAGE_ACCOUNT"]=$_POST["txtCurnpage"];
 
-    if($_SESSION['CUR_PAGE_ACCOUNT'] > ceil($total_rows/MAX_ROWS))
-        $_SESSION['CUR_PAGE_ACCOUNT'] = ceil($total_rows/MAX_ROWS);
+    // if($_SESSION['CUR_PAGE_ACCOUNT'] > ceil($total_rows/MAX_ROWS))
+        // $_SESSION['CUR_PAGE_ACCOUNT'] = ceil($total_rows/MAX_ROWS);
     
     $cur_page=$_SESSION['CUR_PAGE_ACCOUNT'];
-
-    // Setting offset and limit to json
+    // echo '---'.$cur_page;
+    // Setting offset and limit
+    // echo $cur_page;
     $jsonFilter['offset'] = $cur_page > 0 ? ($cur_page - 1) * MAX_ROWS : 1;
     $jsonFilter['limit'] = MAX_ROWS;
 
@@ -109,8 +95,6 @@ if (isset($_POST['submit_form_fillter'])) {
     // var_dump($respSearch);
     // var_dump($_SESSION["COND_SEARCH"]);
 }
-
-// =========THE END SEARCH ==============
 
 // Check item combobox is exist or not session conditon before
 function notExistCondSelected($item, $objCondSelected) {
@@ -218,7 +202,7 @@ function addConditionToArray($keyCondition, $arrData, $objCondSelected) {
           
         </div>
     </fieldset>
-    <!-- <fieldset>
+    <fieldset>
         <section>
             <div class="row">
                 <div class="col col-2">
@@ -256,7 +240,7 @@ function addConditionToArray($keyCondition, $arrData, $objCondSelected) {
                 </div>
             </div>
         </section>
-    </fieldset> -->
+    </fieldset>
     <footer style="text-align: left;">
         <input type="hidden" name="submit_form_fillter">
         <button class="btn btn-danger" onclick="clearConditionSearch()" type="button">
