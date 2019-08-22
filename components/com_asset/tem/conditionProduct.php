@@ -16,14 +16,16 @@ $jsonProduct = json_decode($jsonProduct);
     <fieldset>
         <article class="col-lg-12">
             <section>
-                <label class="label"><strong>Tổng số: <?php echo count($jsonProduct)?> sản phẩm</strong></label>
+                <label class="label"><strong>Tổng số: <?php echo (is_array($jsonProduct)) ? count($jsonProduct) : 0 ?> sản phẩm</strong></label>
                 <ul class="list_product">
                     <?php
-                        for ($i=0; $i < count($jsonProduct); $i++) { ?>
-                            <li class="<?php if ($i==0) echo 'active'?>" url_pro="<?php echo $jsonProduct[$i]->url?>" onclick="chooseProduct('<?php echo $jsonProduct[$i]->url?>', '<?php echo $idxCat;?>')" idx_cat="<?php echo $idxCat;?>">
-                                <a href="#"><i class="fa fa-cog"></i>&nbsp;<?php echo $jsonProduct[$i]->name?></a>
-                            </li>        
-                    <?php } ?>
+                        if (is_array($jsonProduct)) {
+                            for ($i=0; $i < count($jsonProduct); $i++) { ?>
+                                <li class="<?php if ($i==0) echo 'active'?>" url_pro="<?php echo $jsonProduct[$i]->url?>" onclick="chooseProduct('<?php echo $jsonProduct[$i]->url?>', '<?php echo $idxCat;?>')" idx_cat="<?php echo $idxCat;?>">
+                                    <a href="#"><i class="fa fa-cog"></i>&nbsp;<?php echo $jsonProduct[$i]->name?></a>
+                                </li>        
+                    <?php } 
+                    } ?>
                 </ul>
             </section>  
         </article>
