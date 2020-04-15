@@ -3,6 +3,7 @@
 // @params $hostApi
 function getCategoryFilter($rootHostApi) {
     $url = $rootHostApi.'getCategories';
+    // echo $url;
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     $result = curl_exec($curl);
@@ -36,6 +37,7 @@ function getTypeByProduct($rootHostApi, $urlPro) {
 // @params $hostApi, urlType, $offset, $limit
 function getItemsByType($rootHostApi, $urlType, $offset, $limit) {
     $url = $rootHostApi.'getItems?type='.$urlType.'&offset='.$offset.'&limit='.$limit;
+    // echo $url;
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     $result = curl_exec($curl);

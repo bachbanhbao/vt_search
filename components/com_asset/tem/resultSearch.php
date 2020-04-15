@@ -24,7 +24,7 @@ if (isset($_GET['searchbytype']) && !isset($_POST['submit_form_fillter'])) {
 	    $_SESSION['CUR_PAGE_ACCOUNT'] = ceil($total_rows/MAX_ROWS);
 	}
 	
-	$cur_page=$_SESSION['CUR_PAGE_ACCOUNT'];
+	$cur_page = $_SESSION['CUR_PAGE_ACCOUNT'] > 0 ? $_SESSION['CUR_PAGE_ACCOUNT'] : 1;
 	// echo $cur_page;
 	// @params host, urltype, offset, limit
 	$offset = $cur_page > 0 ? ($cur_page - 1) * MAX_ROWS : 1;
@@ -37,7 +37,6 @@ if (isset($_GET['searchbytype']) && !isset($_POST['submit_form_fillter'])) {
 		$dataHead = array();
 	}
 }
-
 ?>
 
 <section class="" id="widget-grid">
@@ -73,6 +72,7 @@ if (isset($_GET['searchbytype']) && !isset($_POST['submit_form_fillter'])) {
 							<tbody>
 								<?php
 								$stt= ($cur_page-1) * MAX_ROWS + 1;
+
 								if ($respSearch != null) {
 									foreach ($respSearch as $key => $value) { ?>
 										<tr>
@@ -241,7 +241,7 @@ if (isset($_GET['searchbytype']) && !isset($_POST['submit_form_fillter'])) {
 		text-align: center;
 		position: absolute;
 	    left: 45%;
-	    top: 30%;
+	    top: 10%;
 	    display: none;
 	}
 	.morecontent span {

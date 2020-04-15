@@ -34,7 +34,10 @@ include_once("includes/vt-includes-js.php");
 </section>
 
 <!-- SCRIPTS ON PAGE EVENT -->
-<script type="text/javascript">	
+<script type="text/javascript">
+	$(document).ready(function(){
+		$.post("<?php echo ROOTHOST;?>ajaxs/clearConditionSearch.php",{clear_all: true},function($rep){})
+	})
 	pageSetUp();
 	var pagefunction = function() {
 		var responsiveHelper_dt_basic = undefined;

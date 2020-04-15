@@ -141,21 +141,21 @@ function addConditionToArray($keyCondition, $arrData, $objCondSelected) {
 
 <!-- Condition selected -->
 <?php if (isset($_SESSION['COND_SEARCH']) && count($_SESSION['COND_SEARCH']) > 0):?>
-<div class="bl-condition-selected">
-    <ul class="lst-condition-selected">
-        <?php
-            if (isset($_SESSION['COND_SEARCH'])) {
-                foreach ($_SESSION['COND_SEARCH'] as $key => $arrCond) {
-                    if (is_array($arrCond)) {
-                        foreach ($arrCond as $k => $val) {
-                            echo "<li>".$val."</li>";
+    <div class="bl-condition-selected" style="overflow: hidden">
+        <ul class="lst-condition-selected">
+            <?php
+                if (isset($_SESSION['COND_SEARCH'])) {
+                    foreach ($_SESSION['COND_SEARCH'] as $key => $arrCond) {
+                        if (is_array($arrCond)) {
+                            foreach ($arrCond as $k => $val) {
+                                echo "<li>".$val."</li>";
+                            }
                         }
                     }
                 }
-            }
-        ?>
-    </ul>
-</div>
+            ?>
+        </ul>
+    </div>
 <?php endif;?>
 
 <div class="count-result-search">

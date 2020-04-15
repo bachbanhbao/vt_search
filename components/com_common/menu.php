@@ -1,7 +1,8 @@
 <?php
 if (!isset($_SESSION['CAT'])) {
 	$_SESSION['CAT'] = getCategoryFilter(ROOTHOST_API_SEARCH);
-	$_SESSION['CAT'] = json_decode($_SESSION['CAT']);	
+	$_SESSION['CAT'] = json_decode($_SESSION['CAT']);
+	
 }
 ?>
 <ul>
